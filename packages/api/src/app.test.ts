@@ -21,7 +21,7 @@ let app: ReturnType<typeof createApiApp>;
 let authToken: string;
 
 beforeEach(async () => {
-  tmpDir = mkdtempSync(join(tmpdir(), "soulmd-test-"));
+  tmpDir = mkdtempSync(join(tmpdir(), "opensoul-test-"));
   db = await createDatabase(`file:${join(tmpDir, "test.db")}`);
   storage = new LocalStorage(join(tmpDir, "registry"));
   app = createApiApp(db, storage);

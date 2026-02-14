@@ -24,7 +24,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm --filter @soulmd/core build
+      - run: pnpm --filter @opensoul/core build
 
       - uses: cloudflare/wrangler-action@v3
         with:

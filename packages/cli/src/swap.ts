@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from
 import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 
-const SWAP_MARKER = "<!-- soulmd:swapped -->";
+const SWAP_MARKER = "<!-- opensoul:swapped -->";
 
 function soulPath(): string {
   return join(homedir(), ".openclaw", "workspace", "SOUL.md");

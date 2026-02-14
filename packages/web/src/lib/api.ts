@@ -11,7 +11,7 @@ const API_URL =
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("soulmd_token");
+  return localStorage.getItem("opensoul_token");
 }
 
 async function apiFetch<T>(

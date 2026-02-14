@@ -41,7 +41,7 @@ importers:
       '@libsql/client':
         specifier: ^0.17.0
         version: 0.17.0
-      '@soulmd/core':
+      '@opensoul/core':
         specifier: workspace:*
         version: link:../core
       ai:
@@ -81,7 +81,7 @@ importers:
       '@inquirer/prompts':
         specifier: ^8.2.0
         version: 8.2.0(@types/node@22.19.11)
-      '@soulmd/core':
+      '@opensoul/core':
         specifier: workspace:*
         version: link:../core
       commander:

@@ -1,12 +1,12 @@
 {
-  "name": "@soulmd/core",
+  "name": "@opensoul/core",
   "version": "0.1.0",
   "description": "Core parser and types for Soul.MD personality files",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/soulmd/cli",
+    "url": "https://github.com/opensoul/cli",
     "directory": "packages/core"
   },
   "publishConfig": {

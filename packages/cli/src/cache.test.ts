@@ -8,7 +8,7 @@ let tmpDir: string;
 let originalHome: string;
 
 beforeEach(() => {
-  tmpDir = mkdtempSync(join(tmpdir(), "soulmd-cache-test-"));
+  tmpDir = mkdtempSync(join(tmpdir(), "opensoul-cache-test-"));
   originalHome = process.env.HOME!;
   process.env.HOME = tmpDir;
 });

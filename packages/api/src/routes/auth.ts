@@ -57,7 +57,7 @@ export function authRoutes(db: Client) {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
         Accept: "application/vnd.github+json",
-        "User-Agent": "SoulMD-API",
+        "User-Agent": "OpenSoul-API",
       },
     });
 
@@ -102,7 +102,7 @@ export function authRoutes(db: Client) {
     );
 
     // Redirect to web app with auth params
-    const webAppUrl = process.env.WEB_APP_URL ?? "https://soulmd.dev";
+    const webAppUrl = process.env.WEB_APP_URL ?? "https://opensoul.md";
     const callbackUrl = new URL("/auth/callback", webAppUrl);
     callbackUrl.searchParams.set("token", token);
     callbackUrl.searchParams.set("id", String(userId));

@@ -2,7 +2,7 @@ import { writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
-const SKILL_DIR_NAME = "soulmd";
+const SKILL_DIR_NAME = "opensoul";
 
 function skillsDir(): string {
   return join(homedir(), ".openclaw", "skills");
@@ -44,9 +44,9 @@ export function uninstallSkill(): boolean {
 
 // Bundled SKILL.md content — kept in sync with packages/openclaw-skill/SKILL.md
 const SKILL_CONTENT = `---
-name: soulmd
+name: opensoul
 description: Search, browse, and swap bot personality (SOUL.md) files from the Soul.MD registry
-metadata: {"openclaw":{"requires":{"bins":["soul"]},"primaryEnv":null},"install":[{"id":"npm","kind":"node","package":"soulmd","bins":["soul"],"label":"Install via npm"}]}
+metadata: {"openclaw":{"requires":{"bins":["soul"]},"primaryEnv":null},"install":[{"id":"npm","kind":"node","package":"opensoul","bins":["soul"],"label":"Install via npm"}]}
 ---
 
 You can manage the bot's personality by swapping SOUL.md files from the Soul.MD registry.

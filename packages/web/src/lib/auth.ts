@@ -33,8 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("soulmd_token");
-    const savedUser = localStorage.getItem("soulmd_user");
+    const savedToken = localStorage.getItem("opensoul_token");
+    const savedUser = localStorage.getItem("opensoul_user");
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
@@ -43,15 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((newToken: string, newUser: User) => {
-    localStorage.setItem("soulmd_token", newToken);
-    localStorage.setItem("soulmd_user", JSON.stringify(newUser));
+    localStorage.setItem("opensoul_token", newToken);
+    localStorage.setItem("opensoul_user", JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("soulmd_token");
-    localStorage.removeItem("soulmd_user");
+    localStorage.removeItem("opensoul_token");
+    localStorage.removeItem("opensoul_user");
     setToken(null);
     setUser(null);
   }, []);

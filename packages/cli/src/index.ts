@@ -40,7 +40,7 @@ const program = new Command();
 
 program
   .name("soul")
-  .description("Soul.MD — Swappable bot personality files")
+  .description("OpenSoul — Swappable bot personality files")
   .version(pkg.version, "-v, --version")
   .option("--verbose", "Enable verbose output for debugging")
   .hook("preAction", () => {
@@ -313,13 +313,13 @@ program
 // --- install ---
 program
   .command("install")
-  .description("Install the SoulMD skill into OpenClaw (~/.openclaw/skills/soulmd/)")
+  .description("Install the OpenSoul skill into OpenClaw (~/.openclaw/skills/opensoul/)")
   .action(() => {
     const { path, updated } = installSkill();
     if (updated) {
-      console.log(pc.green(`\n✓ Updated SoulMD skill`));
+      console.log(pc.green(`\n✓ Updated OpenSoul skill`));
     } else {
-      console.log(pc.green(`\n✓ Installed SoulMD skill`));
+      console.log(pc.green(`\n✓ Installed OpenSoul skill`));
     }
     console.log(pc.dim(`  ${path}`));
     console.log(pc.dim(`  Your OpenClaw bot can now swap souls via natural language.`));
@@ -328,16 +328,16 @@ program
 // --- uninstall ---
 program
   .command("uninstall")
-  .description("Remove the SoulMD skill from OpenClaw")
+  .description("Remove the OpenSoul skill from OpenClaw")
   .action(() => {
     if (!isSkillInstalled()) {
-      console.log(pc.yellow("SoulMD skill is not installed."));
+      console.log(pc.yellow("OpenSoul skill is not installed."));
       return;
     }
 
     const removed = uninstallSkill();
     if (removed) {
-      console.log(pc.green("\n✓ Uninstalled SoulMD skill"));
+      console.log(pc.green("\n✓ Uninstalled OpenSoul skill"));
     } else {
       fail("Failed to uninstall skill.");
     }

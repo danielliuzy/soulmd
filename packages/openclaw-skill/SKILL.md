@@ -1,7 +1,7 @@
 ---
-name: soulmd
+name: opensoul
 description: Search, browse, and swap bot personality (SOUL.md) files from the Soul.MD registry
-metadata: {"openclaw":{"requires":{"bins":["soul"]},"primaryEnv":null},"install":[{"id":"npm","kind":"node","package":"soulmd","bins":["soul"],"label":"Install via npm"}]}
+metadata: {"openclaw":{"requires":{"bins":["soul"]},"primaryEnv":null},"install":[{"id":"npm","kind":"node","package":"opensoul","bins":["soul"],"label":"Install via npm"}]}
 ---
 
 You can manage the bot's personality by swapping SOUL.md files from the Soul.MD registry.

@@ -14,7 +14,7 @@ let tmpDir: string;
 let originalHome: string;
 
 beforeEach(() => {
-  tmpDir = mkdtempSync(join(tmpdir(), "soulmd-swap-test-"));
+  tmpDir = mkdtempSync(join(tmpdir(), "opensoul-swap-test-"));
   originalHome = process.env.HOME!;
   process.env.HOME = tmpDir;
 
@@ -37,7 +37,7 @@ describe("swap", () => {
 
     expect(backedUp).toBe(true);
     const written = readFileSync(join(tmpDir, ".openclaw", "workspace", "SOUL.md"), "utf-8");
-    expect(written).toContain("<!-- soulmd:swapped -->");
+    expect(written).toContain("<!-- opensoul:swapped -->");
     expect(written).toContain("Hello world");
   });
 

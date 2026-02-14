@@ -1,5 +1,5 @@
 {
-  "name": "@soulmd/api",
+  "name": "@opensoul/api",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "@aws-sdk/client-s3": "^3.990.0",
     "@hono/node-server": "^1.19.9",
     "@libsql/client": "^0.17.0",
-    "@soulmd/core": "workspace:*",
+    "@opensoul/core": "workspace:*",
     "ai": "^6.0.86",
     "hono": "^4.7.0",
     "nanoid": "^5.1.6",

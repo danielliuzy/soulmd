@@ -24,7 +24,7 @@ let authToken: string;
 let authToken2: string;
 
 beforeAll(async () => {
-  tmpDir = mkdtempSync(join(tmpdir(), "soulmd-e2e-"));
+  tmpDir = mkdtempSync(join(tmpdir(), "opensoul-e2e-"));
   db = await createDatabase(`file:${join(tmpDir, "e2e.db")}`);
   storage = new LocalStorage(join(tmpDir, "registry"));
   apiApp = createApiApp(db, storage);
@@ -297,7 +297,7 @@ describe("E2E: Local swap and rollback", () => {
   let originalHome: string | undefined;
 
   beforeEach(() => {
-    localHome = mkdtempSync(join(tmpdir(), "soulmd-e2e-swap-"));
+    localHome = mkdtempSync(join(tmpdir(), "opensoul-e2e-swap-"));
     originalHome = process.env.HOME;
     process.env.HOME = localHome;
 

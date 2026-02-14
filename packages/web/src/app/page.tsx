@@ -15,10 +15,10 @@ const fadeUp = {
 
 export default function HomePage() {
   const installers = [
-    { label: "npm", command: "npm install -g soulmd" },
-    { label: "pnpm", command: "pnpm add -g soulmd" },
-    { label: "yarn", command: "yarn global add soulmd" },
-    { label: "bun", command: "bun add -g soulmd" },
+    { label: "npm", command: "npm install -g opensoul" },
+    { label: "pnpm", command: "pnpm add -g opensoul" },
+    { label: "yarn", command: "yarn global add opensoul" },
+    { label: "bun", command: "bun add -g opensoul" },
   ];
   const [selected, setSelected] = useState(0);
   const [copied, setCopied] = useState(false);

@@ -7,7 +7,7 @@ let tmpDir: string;
 let originalHome: string | undefined;
 
 beforeEach(() => {
-  tmpDir = mkdtempSync(join(tmpdir(), "soulmd-skill-test-"));
+  tmpDir = mkdtempSync(join(tmpdir(), "opensoul-skill-test-"));
   originalHome = process.env.HOME;
   process.env.HOME = tmpDir;
 });
@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 describe("skill install/uninstall", () => {
-  it("installs the skill to ~/.openclaw/skills/soulmd/SKILL.md", async () => {
+  it("installs the skill to ~/.openclaw/skills/opensoul/SKILL.md", async () => {
     const { installSkill, isSkillInstalled, getSkillPath } = await import("./skill.js");
 
     expect(isSkillInstalled()).toBe(false);
@@ -30,7 +30,7 @@ describe("skill install/uninstall", () => {
     expect(isSkillInstalled()).toBe(true);
 
     const content = readFileSync(path, "utf-8");
-    expect(content).toContain("name: soulmd");
+    expect(content).toContain("name: opensoul");
     expect(content).toContain("soul search");
     expect(content).toContain("soul swap");
     expect(content).toContain("soul rollback");
@@ -69,6 +69,6 @@ describe("skill install/uninstall", () => {
     // HOME dir exists but .openclaw/skills/ does not
     const { path } = installSkill();
     expect(existsSync(path)).toBe(true);
-    expect(path).toContain(".openclaw/skills/soulmd/SKILL.md");
+    expect(path).toContain(".openclaw/skills/opensoul/SKILL.md");
   });
 });

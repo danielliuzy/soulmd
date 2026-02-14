@@ -1,4 +1,4 @@
-// SOULmd.ai API
+// OpenSoul API
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Client } from "@libsql/client";
