@@ -17,7 +17,7 @@ function defaultConfig(): SoulConfig {
     auth_token: "dev-token",
     cache_dir: join(homedir(), ".soul", "cache"),
     swap_mode: "immediate",
-    registry_url: "https://api.soulmd.dev",
+    registry_url: "https://soulmd-api.zyliu-daniel.workers.dev",
   };
 }
 

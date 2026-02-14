@@ -1,6 +1,6 @@
 {
   "name": "soulmd",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Swappable bot personality files — search, pull, and swap SOUL.md files from the Soul.MD registry",
   "type": "module",
   "license": "MIT",
