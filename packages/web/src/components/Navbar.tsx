@@ -43,7 +43,7 @@ export default function Navbar() {
             <div className="w-8 h-8 rounded-full bg-bg-card animate-pulse" />
           ) : user ? (
             <div className="flex items-center gap-3">
-              <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Link href={`/user/${user.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <Image
                   src={user.avatar}
                   alt={user.username}

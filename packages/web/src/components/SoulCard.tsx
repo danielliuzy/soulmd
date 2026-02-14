@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Download } from "lucide-react";
 import type { Soul } from "@/lib/types";
 
 export default function SoulCard({ soul }: { soul: Soul }) {
@@ -11,14 +12,22 @@ export default function SoulCard({ soul }: { soul: Soul }) {
       <p className="text-sm text-text-muted mt-1 line-clamp-2">
         {soul.description ?? "No description"}
       </p>
-      <div className="flex items-center gap-1 mt-4">
-        <span className="text-star text-sm">&#9733;</span>
-        <span className="text-sm text-text-muted">
-          {soul.rating_avg > 0 ? soul.rating_avg.toFixed(1) : "—"}
-        </span>
-        {soul.rating_count > 0 && (
-          <span className="text-xs text-text-muted">
-            ({soul.rating_count})
+      <div className="flex items-center gap-3 mt-4">
+        <div className="flex items-center gap-1">
+          <span className="text-star text-sm">&#9733;</span>
+          <span className="text-sm text-text-muted">
+            {soul.rating_avg > 0 ? soul.rating_avg.toFixed(1) : "—"}
+          </span>
+          {soul.rating_count > 0 && (
+            <span className="text-xs text-text-muted">
+              ({soul.rating_count})
+            </span>
+          )}
+        </div>
+        {soul.downloads_count > 0 && (
+          <span className="flex items-center gap-1 text-xs text-text-muted">
+            <Download size={12} />
+            {soul.downloads_count.toLocaleString()}
           </span>
         )}
       </div>

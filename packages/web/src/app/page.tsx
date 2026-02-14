@@ -69,7 +69,7 @@ export default function HomePage() {
             href="/upload"
             className="border-2 border-accent text-accent hover:bg-accent hover:text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors"
           >
-            Upload SOUL.md
+            Upload
           </Link>
         </motion.div>
         <motion.div

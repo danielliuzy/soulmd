@@ -10,6 +10,7 @@ export interface SoulRecord {
   tags: string;
   rating_avg: number;
   rating_count: number;
+  downloads_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -126,7 +127,15 @@ async function migrate(client: Client): Promise<void> {
   } catch {
     // Column already gone — nothing to do
   }
-  await client.execute("DROP TABLE IF EXISTS soul_versions");}
+  await client.execute("DROP TABLE IF EXISTS soul_versions");
+
+  // Migration: add downloads_count column
+  try {
+    await client.execute("SELECT downloads_count FROM souls LIMIT 0");
+  } catch {
+    await client.execute("ALTER TABLE souls ADD COLUMN downloads_count INTEGER NOT NULL DEFAULT 0");
+  }
+}
 
 export function slugify(name: string): string {
   return name

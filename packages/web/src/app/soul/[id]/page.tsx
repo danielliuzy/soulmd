@@ -179,6 +179,9 @@ export default function SoulDetailPage() {
                         a.download = `${soul.label}.SOUL.md`;
                         a.click();
                         URL.revokeObjectURL(url);
+                        // Track download
+                        fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1"}/souls/${params.id}/download`, { method: "POST" }).catch(() => {});
+                        setSoul((prev) => prev ? { ...prev, downloads_count: prev.downloads_count + 1 } : prev);
                       }}
                       className="text-sm px-3 sm:px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors font-medium flex items-center gap-1.5"
                     >
@@ -378,6 +381,12 @@ export default function SoulDetailPage() {
                   Login to rate this soul
                 </p>
               )}
+            </div>
+            <div>
+              <span className="text-xs text-text-muted uppercase tracking-wide font-sans">
+                Downloads
+              </span>
+              <p className="text-sm text-text mt-1">{soul.downloads_count.toLocaleString()}</p>
             </div>
             <div>
               <span className="text-xs text-text-muted uppercase tracking-wide font-sans">

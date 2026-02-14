@@ -9,6 +9,7 @@ export interface Soul {
   tags: string[];
   rating_avg: number;
   rating_count: number;
+  downloads_count: number;
   created_at: string;
   updated_at: string;
 }

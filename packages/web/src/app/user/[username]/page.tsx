@@ -3,18 +3,26 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getUser, getUserSouls } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 import type { Soul, Pagination } from "@/lib/types";
 import SoulCard from "@/components/SoulCard";
 import Image from "next/image";
 
 export default function UserProfilePage() {
   const params = useParams<{ username: string }>();
-  const [profile, setProfile] = useState<{ id: number; username: string; avatar: string } | null>(null);
+  const { user: currentUser } = useAuth();
+  const [profile, setProfile] = useState<{
+    id: number;
+    username: string;
+    avatar: string;
+  } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [souls, setSouls] = useState<Soul[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+
+  const isOwner = currentUser?.username === params.username;
 
   useEffect(() => {
     if (!params.username) return;
@@ -37,7 +45,9 @@ export default function UserProfilePage() {
     return (
       <div className="text-center py-16">
         <h1 className="text-2xl font-bold mb-4">User not found</h1>
-        <p className="text-text-muted">The user &quot;{params.username}&quot; does not exist.</p>
+        <p className="text-text-muted">
+          The user &quot;{params.username}&quot; does not exist.
+        </p>
       </div>
     );
   }
@@ -70,9 +80,15 @@ export default function UserProfilePage() {
         <div>
           <h1 className="text-2xl font-bold">{profile.username}</h1>
           <p className="text-text-muted text-sm">
-            {pagination
-              ? `${pagination.total} ${pagination.total !== 1 ? "files" : "file"} uploaded`
-              : "Loading..."}
+            {pagination ? (
+              <>
+                {pagination.total}{" "}
+                <span className="text-accent">SOUL</span>{pagination.total !== 1 ? "s" : ""}{" "}
+                uploaded
+              </>
+            ) : (
+              "Loading..."
+            )}
           </p>
         </div>
       </div>
@@ -85,7 +101,25 @@ export default function UserProfilePage() {
         </div>
       ) : souls.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-text-muted">This user hasn&apos;t uploaded any <span className="text-accent">SOUL</span>.md files yet.</p>
+          {isOwner ? (
+            <>
+              <p className="text-text-muted mb-4">
+                You haven&apos;t uploaded any{" "}
+                <span className="text-accent">SOUL</span>.md files yet.
+              </p>
+              <a
+                href="/upload"
+                className="bg-accent hover:bg-accent-hover text-white px-6 py-2.5 rounded-md font-medium transition-colors"
+              >
+                Upload your first SOUL.md
+              </a>
+            </>
+          ) : (
+            <p className="text-text-muted">
+              This user hasn&apos;t uploaded any{" "}
+              <span className="text-accent">SOUL</span>.md files yet.
+            </p>
+          )}
         </div>
       ) : (
         <>

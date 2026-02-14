@@ -143,6 +143,16 @@ export function soulRoutes(db: Client, storage: StorageInterface) {
     return c.text(content);
   });
 
+  // Track a download (public)
+  app.post("/:slug/download", async (c) => {
+    const slug = c.req.param("slug");
+    await db.execute({
+      sql: "UPDATE souls SET downloads_count = downloads_count + 1 WHERE slug = ? OR label = ?",
+      args: [slug, slug],
+    });
+    return c.json({ ok: true });
+  });
+
   // Upload new soul (requires auth)
   app.post("/", requireAuth, async (c) => {
     const user = c.get("user");
