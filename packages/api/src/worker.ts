@@ -14,6 +14,7 @@ export interface Env {
   GITHUB_CLIENT_SECRET: string;
   GITHUB_REDIRECT_URI?: string;
   JWT_SECRET: string;
+  WEB_APP_URL?: string;
 }
 
 export default {
@@ -26,6 +27,7 @@ export default {
       GITHUB_CLIENT_SECRET: env.GITHUB_CLIENT_SECRET,
       GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI,
       JWT_SECRET: env.JWT_SECRET,
+      WEB_APP_URL: env.WEB_APP_URL,
     });
 
     const db = createClient({
