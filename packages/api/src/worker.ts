@@ -15,6 +15,7 @@ export interface Env {
   GITHUB_REDIRECT_URI?: string;
   JWT_SECRET: string;
   WEB_APP_URL?: string;
+  OPENAI_API_KEY: string;
 }
 
 export default {
@@ -28,6 +29,7 @@ export default {
       GITHUB_REDIRECT_URI: env.GITHUB_REDIRECT_URI,
       JWT_SECRET: env.JWT_SECRET,
       WEB_APP_URL: env.WEB_APP_URL,
+      OPENAI_API_KEY: env.OPENAI_API_KEY,
     });
 
     const db = createClient({
