@@ -10,6 +10,10 @@ import { listCached, getCached, cacheSoul } from "./cache.js";
 import { swapSoul, rollbackSoul, hasBackup, isSwapped, readCurrentSoul, getSoulPath } from "./swap.js";
 import { RegistryClient } from "./registry-client.js";
 import { installSkill, uninstallSkill, isSkillInstalled, getSkillPath } from "./skill.js";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(resolve(__dirname, "../package.json"), "utf-8"));
 
 let verbose = false;
 
@@ -37,7 +41,7 @@ const program = new Command();
 program
   .name("soul")
   .description("Soul.MD — Swappable bot personality files")
-  .version("0.1.0")
+  .version(pkg.version, "-v, --version")
   .option("--verbose", "Enable verbose output for debugging")
   .hook("preAction", () => {
     verbose = program.opts().verbose ?? false;
