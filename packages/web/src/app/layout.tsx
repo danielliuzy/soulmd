@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SOULmd.ai",
+  title: "OpenSOUL.md",
   description: "Discover, share, and rate AI personality definitions",
 };
 

@@ -39,9 +39,9 @@ export default function HomePage() {
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.4 }}
-          className="text-4xl md:text-6xl font-bold mb-4 font-mono"
+          className="text-4xl md:text-6xl font-bold mb-4"
         >
-          <span className="text-accent">SOUL</span>md.ai
+          Open<span className="text-accent font-mono">SOUL</span>.md
         </motion.h1>
         <motion.p
           variants={fadeUp}

@@ -15,8 +15,8 @@ export default function Navbar() {
     <nav className="border-b border-border sticky top-0 z-50 bg-bg/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" className="text-lg font-bold font-mono">
-            <span className="text-accent">SOUL</span>md.ai
+          <Link href="/" className="text-lg font-bold">
+            Open<span className="text-accent font-mono">SOUL</span>.md
           </Link>
           <Link
             href="/browse"
