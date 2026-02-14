@@ -6,6 +6,8 @@ on:
     paths:
       - 'packages/api/**'
       - 'packages/core/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-api.yml'
 
 jobs:
   deploy:
