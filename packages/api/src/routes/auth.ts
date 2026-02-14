@@ -57,6 +57,7 @@ export function authRoutes(db: Client) {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
         Accept: "application/vnd.github+json",
+        "User-Agent": "SoulMD-API",
       },
     });
 
