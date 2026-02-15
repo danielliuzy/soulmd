@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getSoul, getSoulContent, rateSoul, updateSoul, updateSoulContent, deleteSoul } from "@/lib/api";
+import { getSoul, getSoulContent, getSoulImageUrl, rateSoul, updateSoul, updateSoulContent, deleteSoul } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { SoulDetailResponse } from "@/lib/types";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import StarRating from "@/components/StarRating";
 import { Pencil, Copy, Check, Download, Trash2, SquarePen } from "lucide-react";
+import SoulAvatar from "@/components/SoulAvatar";
+import SoulImageManager from "@/components/SoulImageManager";
 
 export default function SoulDetailPage() {
   const params = useParams<{ id: string }>();
@@ -32,6 +34,8 @@ export default function SoulDetailPage() {
   const [descDraft, setDescDraft] = useState("");
   const [saving, setSaving] = useState(false);
   const [labelError, setLabelError] = useState("");
+  const [imageVersion, setImageVersion] = useState(() => Date.now());
+  const [showLightbox, setShowLightbox] = useState(false);
 
   const isOwner = !!(user && soul && soul.user_id === user.id);
 
@@ -258,6 +262,30 @@ export default function SoulDetailPage() {
         {/* Sidebar */}
         <aside className="lg:w-72 shrink-0">
           <div className="bg-bg-card border border-border rounded-lg p-5 space-y-4 sticky top-20">
+            {/* Avatar */}
+            {isOwner ? (
+              <div className="flex flex-col items-center gap-3">
+                <SoulImageManager
+                  slug={soul.slug}
+                  imageUrl={soul.image_url}
+                  onImageChange={(imageUrl) => {
+                    setSoul((prev) => prev ? { ...prev, image_url: imageUrl } : prev);
+                    setImageVersion(Date.now());
+                  }}
+                >
+                  <button type="button" onClick={() => soul.image_url && setShowLightbox(true)} className={`block leading-none ${soul.image_url ? "cursor-pointer" : ""}`}>
+                    <SoulAvatar key={imageVersion} soul={soul} size={128} version={imageVersion} />
+                  </button>
+                </SoulImageManager>
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <button type="button" onClick={() => soul.image_url && setShowLightbox(true)} className={`block leading-none ${soul.image_url ? "cursor-pointer" : ""}`}>
+                  <SoulAvatar key={imageVersion} soul={soul} size={128} version={imageVersion} />
+                </button>
+              </div>
+            )}
+
             {/* Label */}
             {editing === "label" ? (
               <div className="space-y-2">
@@ -446,6 +474,21 @@ export default function SoulDetailPage() {
           </div>
         </aside>
       </div>
+
+      {/* Image lightbox */}
+      {showLightbox && soul.image_url && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 cursor-pointer"
+          onClick={() => setShowLightbox(false)}
+        >
+          <img
+            src={`${getSoulImageUrl(soul.slug)}?v=${encodeURIComponent(soul.image_url)}&t=${imageVersion}`}
+            alt={soul.name}
+            className="max-w-[min(400px,80vw)] max-h-[min(400px,80vh)] rounded-xl shadow-2xl object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* Delete confirmation modal */}
       {showDeleteModal && (

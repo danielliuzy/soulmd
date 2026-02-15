@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Download } from "lucide-react";
 import type { Soul } from "@/lib/types";
+import SoulAvatar from "./SoulAvatar";
 
 export default function SoulCard({ soul }: { soul: Soul }) {
   return (
@@ -8,10 +9,15 @@ export default function SoulCard({ soul }: { soul: Soul }) {
       href={`/soul/${soul.slug}`} /* slug contains nanoid */
       className="block bg-bg-card border border-border rounded-lg p-5 hover:border-accent/50 hover:bg-bg-hover transition-all"
     >
-      <h3 className="font-semibold text-text truncate">{soul.name}</h3>
-      <p className="text-sm text-text-muted mt-1 line-clamp-2 min-h-[2.5rem]">
-        {soul.description ?? "No description"}
-      </p>
+      <div className="flex gap-4 items-center">
+        <SoulAvatar soul={soul} size={64} />
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-text truncate">{soul.name}</h3>
+          <p className="text-sm text-text-muted mt-1 line-clamp-2 min-h-[2.5rem]">
+            {soul.description ?? "No description"}
+          </p>
+        </div>
+      </div>
       <div className="flex items-center gap-3 mt-4">
         <div className="flex items-center gap-1">
           <span className="text-star text-sm">&#9733;</span>

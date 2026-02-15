@@ -6,6 +6,9 @@ export interface StorageInterface {
   saveSoul(slug: string, content: string): Promise<string>;
   getSoul(slug: string): Promise<string | null>;
   deleteSoul(slug: string): Promise<void>;
+  saveImage(slug: string, filename: string, data: ArrayBuffer, contentType: string): Promise<void>;
+  getImage(slug: string, filename: string): Promise<{ data: ArrayBuffer; contentType: string } | null>;
+  deleteImage(slug: string, filename: string): Promise<void>;
 }
 
 export class LocalStorage implements StorageInterface {
@@ -32,6 +35,26 @@ export class LocalStorage implements StorageInterface {
   async deleteSoul(slug: string): Promise<void> {
     const dir = join(this.baseDir, slug);
     if (existsSync(dir)) rmSync(dir, { recursive: true });
+  }
+
+  async saveImage(slug: string, filename: string, data: ArrayBuffer, _contentType: string): Promise<void> {
+    const filePath = join(this.baseDir, slug, filename);
+    mkdirSync(dirname(filePath), { recursive: true });
+    writeFileSync(filePath, Buffer.from(data));
+  }
+
+  async getImage(slug: string, filename: string): Promise<{ data: ArrayBuffer; contentType: string } | null> {
+    const filePath = join(this.baseDir, slug, filename);
+    if (!existsSync(filePath)) return null;
+    const ext = filename.split(".").pop()?.toLowerCase();
+    const contentType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+    const data = readFileSync(filePath);
+    return { data: data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength), contentType };
+  }
+
+  async deleteImage(slug: string, filename: string): Promise<void> {
+    const filePath = join(this.baseDir, slug, filename);
+    if (existsSync(filePath)) unlinkSync(filePath);
   }
 
   private filePath(slug: string): string {

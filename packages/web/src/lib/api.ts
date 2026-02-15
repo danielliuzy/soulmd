@@ -126,6 +126,40 @@ export function deleteSoul(id: string): Promise<{ ok: boolean }> {
   return apiFetch<{ ok: boolean }>(`/souls/${id}`, { method: "DELETE" });
 }
 
+export function getSoulImageUrl(slug: string): string {
+  return `${API_URL}/souls/${slug}/image`;
+}
+
+export async function uploadSoulImage(slug: string, file: File): Promise<{ image_url: string }> {
+  const token = getToken();
+  const headers: Record<string, string> = {
+    "Content-Type": file.type,
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/souls/${slug}/image`, {
+    method: "POST",
+    headers,
+    body: await file.arrayBuffer(),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error ?? `API error ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function generateSoulImage(slug: string, style: string): Promise<{ image_url: string }> {
+  return apiFetch<{ image_url: string }>(`/souls/${slug}/image/generate`, {
+    method: "POST",
+    body: JSON.stringify({ style }),
+  });
+}
+
+export async function deleteSoulImage(slug: string): Promise<{ ok: boolean }> {
+  return apiFetch<{ ok: boolean }>(`/souls/${slug}/image`, { method: "DELETE" });
+}
+
 export function getLoginUrl(): string {
   return `${API_URL}/auth/github`;
 }

@@ -21,7 +21,8 @@ export class S3Storage implements StorageInterface {
   private async signedFetch(
     method: string,
     key: string,
-    body?: string,
+    body?: string | ArrayBuffer,
+    contentType?: string,
   ): Promise<Response> {
     const url = `${this.endpoint}/${this.bucket}/${key}`;
     const now = new Date();
@@ -37,7 +38,7 @@ export class S3Storage implements StorageInterface {
     };
 
     if (body !== undefined) {
-      headers["content-type"] = "text/markdown";
+      headers["content-type"] = contentType ?? "text/markdown";
     }
 
     // Build canonical request
@@ -110,6 +111,31 @@ export class S3Storage implements StorageInterface {
 
   async deleteSoul(slug: string): Promise<void> {
     await this.signedFetch("DELETE", `${slug}/soul.md`);
+  }
+
+  async saveImage(slug: string, filename: string, data: ArrayBuffer, contentType: string): Promise<void> {
+    const key = `${slug}/${filename}`;
+    const res = await this.signedFetch("PUT", key, data, contentType);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`S3 PUT image failed (${res.status}): ${text}`);
+    }
+  }
+
+  async getImage(slug: string, filename: string): Promise<{ data: ArrayBuffer; contentType: string } | null> {
+    try {
+      const res = await this.signedFetch("GET", `${slug}/${filename}`);
+      if (!res.ok) return null;
+      const data = await res.arrayBuffer();
+      const contentType = res.headers.get("content-type") ?? "image/png";
+      return { data, contentType };
+    } catch {
+      return null;
+    }
+  }
+
+  async deleteImage(slug: string, filename: string): Promise<void> {
+    await this.signedFetch("DELETE", `${slug}/${filename}`);
   }
 }
 

@@ -3,7 +3,7 @@ import type { Client } from "@libsql/client";
 import { createHash } from "node:crypto";
 import { nanoid } from "nanoid";
 import type { StorageInterface } from "../storage/local.js";
-import type { SoulWithAuthor } from "../storage/sqlite.js";
+import type { SoulWithAuthor, SoulRecord } from "../storage/sqlite.js";
 import { generateLabel } from "../storage/sqlite.js";
 import { requireAuth } from "../middleware/auth.js";
 
@@ -63,6 +63,22 @@ function parseSoulRow(row: Record<string, unknown>) {
     ...row,
     tags: JSON.parse(row.tags as string),
   };
+}
+
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const IMAGE_STYLES: Record<string, string> = {
+  minimalist: "clean minimalist style with simple shapes and muted colors",
+  cyberpunk: "cyberpunk style with neon colors, glitch effects, and dark atmosphere",
+  watercolor: "soft watercolor painting style with flowing colors and organic textures",
+  "pixel-art": "retro pixel art style with visible pixels and limited color palette",
+  anime: "anime style with bold outlines, vibrant colors, and expressive features",
+  realistic: "photorealistic style with natural lighting, detailed textures, and lifelike proportions",
+};
+
+function buildImagePrompt(name: string, description: string | null, content: string, style: string): string {
+  const excerpt = content.slice(0, 500);
+  const styleDesc = IMAGE_STYLES[style] ?? "minimalist style";
+  return `Create a square avatar for an AI persona called "${name}". ${description ? `This persona is described as: ${description}. ` : ""}The persona's content begins with: "${excerpt}..." Style: ${styleDesc}. Framing: close-up headshot portrait, face fills most of the frame, cropped from upper chest up. Show expressive eyes and facial details for emotional connection. No text or letters. The image must fill the entire canvas edge-to-edge with no margins, borders, padding, or empty space on any side.`;
 }
 
 export function soulRoutes(db: Client, storage: StorageInterface) {
@@ -308,6 +324,9 @@ export function soulRoutes(db: Client, storage: StorageInterface) {
       return c.json({ error: "Forbidden" }, 403);
     }
 
+    if ((soul as unknown as SoulRecord).image_url) {
+      await storage.deleteImage(soul.slug as string, (soul as unknown as SoulRecord).image_url as string);
+    }
     await storage.deleteSoul(soul.slug as string);
     await db.execute({ sql: "DELETE FROM souls WHERE id = ?", args: [soul.id] });
 
@@ -351,6 +370,169 @@ export function soulRoutes(db: Client, storage: StorageInterface) {
     });
 
     return c.json({ slug, rating: body.rating, rating_avg: avg, rating_count: stats.count });
+  });
+
+  // Get soul image (public)
+  app.get("/:slug/image", async (c) => {
+    const slug = c.req.param("slug");
+    const result = await db.execute({
+      sql: "SELECT slug, image_url FROM souls WHERE slug = ? OR label = ?",
+      args: [slug, slug],
+    });
+    const soul = result.rows[0] as unknown as { slug: string; image_url: string | null } | undefined;
+    if (!soul || !soul.image_url) {
+      return c.json({ error: "Image not found" }, 404);
+    }
+
+    const image = await storage.getImage(soul.slug, soul.image_url);
+    if (!image) {
+      return c.json({ error: "Image not found" }, 404);
+    }
+
+    return new Response(image.data, {
+      headers: {
+        "Content-Type": image.contentType,
+        "Cache-Control": "public, no-cache",
+      },
+    });
+  });
+
+  // Upload soul image (requires auth + ownership)
+  app.post("/:slug/image", requireAuth, async (c) => {
+    const slug = c.req.param("slug");
+    const user = c.get("user");
+
+    const result = await db.execute({
+      sql: `${SOUL_SELECT} WHERE s.slug = ? OR s.label = ?`,
+      args: [slug, slug],
+    });
+    const soul = result.rows[0] as unknown as SoulWithAuthor | undefined;
+    if (!soul) return c.json({ error: "Soul not found" }, 404);
+    if ((soul.user_id as number) !== user.id) return c.json({ error: "Forbidden" }, 403);
+
+    const contentType = c.req.header("content-type") ?? "";
+    if (!ALLOWED_IMAGE_TYPES.has(contentType)) {
+      return c.json({ error: "Content-Type must be image/jpeg, image/png, or image/webp" }, 400);
+    }
+
+    const data = await c.req.arrayBuffer();
+    if (data.byteLength < 1024 || data.byteLength > 5 * 1024 * 1024) {
+      return c.json({ error: "Image must be between 1KB and 5MB" }, 400);
+    }
+
+    const ext = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+    const filename = `avatar.${ext}`;
+
+    // Delete old image if exists
+    if ((soul as unknown as SoulRecord).image_url) {
+      await storage.deleteImage(soul.slug as string, (soul as unknown as SoulRecord).image_url as string);
+    }
+
+    await storage.saveImage(soul.slug as string, filename, data, contentType);
+    await db.execute({
+      sql: "UPDATE souls SET image_url = ?, updated_at = datetime('now') WHERE id = ?",
+      args: [filename, soul.id],
+    });
+
+    return c.json({ image_url: filename });
+  });
+
+  // Delete soul image (requires auth + ownership)
+  app.delete("/:slug/image", requireAuth, async (c) => {
+    const slug = c.req.param("slug");
+    const user = c.get("user");
+
+    const result = await db.execute({
+      sql: `${SOUL_SELECT} WHERE s.slug = ? OR s.label = ?`,
+      args: [slug, slug],
+    });
+    const soul = result.rows[0] as unknown as SoulWithAuthor | undefined;
+    if (!soul) return c.json({ error: "Soul not found" }, 404);
+    if ((soul.user_id as number) !== user.id) return c.json({ error: "Forbidden" }, 403);
+
+    const imageUrl = (soul as unknown as SoulRecord).image_url as string | null;
+    if (imageUrl) {
+      await storage.deleteImage(soul.slug as string, imageUrl);
+    }
+    await db.execute({
+      sql: "UPDATE souls SET image_url = NULL, updated_at = datetime('now') WHERE id = ?",
+      args: [soul.id],
+    });
+
+    return c.json({ ok: true });
+  });
+
+  // Generate soul image with AI (requires auth + ownership)
+  app.post("/:slug/image/generate", requireAuth, async (c) => {
+    const slug = c.req.param("slug");
+    const user = c.get("user");
+
+    const result = await db.execute({
+      sql: `${SOUL_SELECT} WHERE s.slug = ? OR s.label = ?`,
+      args: [slug, slug],
+    });
+    const soul = result.rows[0] as unknown as SoulWithAuthor | undefined;
+    if (!soul) return c.json({ error: "Soul not found" }, 404);
+    if ((soul.user_id as number) !== user.id) return c.json({ error: "Forbidden" }, 403);
+
+    const body = await c.req.json<{ style: string }>();
+    if (!body.style || !IMAGE_STYLES[body.style]) {
+      return c.json({ error: `Style must be one of: ${Object.keys(IMAGE_STYLES).join(", ")}` }, 400);
+    }
+
+    // Fetch soul content for context
+    const soulContent = await storage.getSoul(soul.slug as string);
+    const prompt = buildImagePrompt(
+      soul.name as string,
+      soul.description as string | null,
+      soulContent ?? "",
+      body.style,
+    );
+
+    // Call fal.ai Nano Banana
+    const res = await fetch("https://fal.run/fal-ai/nano-banana", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Key ${process.env.FAL_KEY}`,
+      },
+      body: JSON.stringify({
+        prompt,
+        num_images: 1,
+        aspect_ratio: "1:1",
+        output_format: "png",
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      return c.json({ error: `Image generation failed: ${err}` }, 502);
+    }
+
+    const data = (await res.json()) as { images: { url: string }[] };
+    const imageUrl = data.images[0].url;
+
+    // Download the generated image
+    const imageRes = await fetch(imageUrl);
+    if (!imageRes.ok) {
+      return c.json({ error: "Failed to download generated image" }, 502);
+    }
+    const imageData = await imageRes.arrayBuffer();
+
+    const filename = "avatar.png";
+
+    // Delete old image if exists
+    if ((soul as unknown as SoulRecord).image_url) {
+      await storage.deleteImage(soul.slug as string, (soul as unknown as SoulRecord).image_url as string);
+    }
+
+    await storage.saveImage(soul.slug as string, filename, imageData, "image/png");
+    await db.execute({
+      sql: "UPDATE souls SET image_url = ?, updated_at = datetime('now') WHERE id = ?",
+      args: [filename, soul.id],
+    });
+
+    return c.json({ image_url: filename });
   });
 
   return app;

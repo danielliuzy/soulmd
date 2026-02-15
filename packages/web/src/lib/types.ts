@@ -10,6 +10,7 @@ export interface Soul {
   rating_avg: number;
   rating_count: number;
   downloads_count: number;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, basename } from "node:path";
 import { createInterface } from "node:readline";
 import pc from "picocolors";
 import { createHash } from "node:crypto";
@@ -188,6 +188,20 @@ program
       }
 
       const filename = pathOrName.split("/").pop() ?? pathOrName;
+
+      // Validate the target soul path before attempting the swap
+      const targetPath = getSoulPath();
+      const targetDir = dirname(targetPath);
+      if (!existsSync(targetDir)) {
+        fail(
+          `Target directory not found: ${pc.yellow(targetDir)}\n\n  Your configured SOUL.md path is: ${pc.cyan(targetPath)}\n  Use ${pc.bold("soul path <newPath>")} to set the correct path to your SOUL.md file.`,
+        );
+      }
+      if (basename(targetPath) !== "SOUL.md") {
+        fail(
+          `Configured path points to ${pc.yellow(basename(targetPath))}, expected ${pc.cyan("SOUL.md")}\n\n  Your configured path is: ${pc.cyan(targetPath)}\n  Use ${pc.bold("soul path <newPath>")} to set it to a valid SOUL.md file or its parent directory.`,
+        );
+      }
 
       if (opts.dryRun) {
         console.log(pc.bold("\n[dry-run] Would possess with:"));

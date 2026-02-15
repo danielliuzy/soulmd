@@ -11,6 +11,7 @@ export interface SoulRecord {
   rating_avg: number;
   rating_count: number;
   downloads_count: number;
+  image_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -134,6 +135,13 @@ async function migrate(client: Client): Promise<void> {
     await client.execute("SELECT downloads_count FROM souls LIMIT 0");
   } catch {
     await client.execute("ALTER TABLE souls ADD COLUMN downloads_count INTEGER NOT NULL DEFAULT 0");
+  }
+
+  // Migration: add image_url column
+  try {
+    await client.execute("SELECT image_url FROM souls LIMIT 0");
+  } catch {
+    await client.execute("ALTER TABLE souls ADD COLUMN image_url TEXT");
   }
 }
 

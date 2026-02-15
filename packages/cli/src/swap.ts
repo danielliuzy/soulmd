@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 import { loadConfig } from "./config.js";
@@ -6,7 +6,11 @@ import { loadConfig } from "./config.js";
 const SWAP_MARKER = "<!-- opensoul:swapped -->";
 
 function soulPath(): string {
-  return loadConfig().soul_path;
+  const p = loadConfig().soul_path;
+  if (existsSync(p) && statSync(p).isDirectory()) {
+    return join(p, "SOUL.md");
+  }
+  return p;
 }
 
 function backupDir(): string {
