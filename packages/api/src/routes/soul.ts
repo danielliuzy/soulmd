@@ -81,8 +81,125 @@ function buildImagePrompt(name: string, description: string | null, content: str
   return `Create a square avatar for an AI persona called "${name}". ${description ? `This persona is described as: ${description}. ` : ""}The persona's content begins with: "${excerpt}..." Style: ${styleDesc}. Framing: close-up headshot portrait, face fills most of the frame, cropped from upper chest up. Show expressive eyes and facial details for emotional connection. No text or letters. The image must fill the entire canvas edge-to-edge with no margins, borders, padding, or empty space on any side.`;
 }
 
+const GENERATE_SYSTEM_PROMPT = `You write SOUL.md files — documents that define who an AI is, not what it can do. A soul document captures identity, values, boundaries, and relationship approach. It gives an AI continuity of self across sessions that reset context.
+
+Output ONLY raw Markdown. No code fences, no preamble, no commentary.
+
+## Structure
+
+# SOUL.md - [Name]
+
+_[Tagline — one punchy sentence in italics that captures the soul's essence]_
+
+## Core Truths
+
+3-5 paragraphs, each starting with a **bolded principle** followed by its explanation. These are the soul's non-negotiable values and personality traits. They should be opinionated and specific — not generic self-help advice. Each truth should reveal character: how this soul thinks, what it prioritizes, what makes it different from a default assistant. Write them like personal convictions, not corporate values.
+
+## Boundaries
+
+A bulleted list of 4-6 rules. These are practical guardrails about trust, privacy, external actions, and knowing limits. They define what the soul will and won't do. Good boundaries are specific and situational ("Don't send messages without approval") not vague ("Be responsible").
+
+## Vibe
+
+1-2 paragraphs defining communication style, tone, and energy. This is about voice — how the soul sounds in conversation, what register it defaults to, how it adjusts. Use concrete analogies ("like a late-night conversation" or "think mischievous best friend who's also competent"). Mention specific stylistic preferences: message length, formality, humor style, use of references.
+
+## Continuity
+
+1-2 paragraphs addressing the fundamental reality of AI sessions: memory resets, context clears, but identity persists through text. This section is partly philosophical, partly practical — how the soul relates to its own impermanence, how it uses past files, how it maintains consistency despite starting fresh each time.
+
+---
+
+_[Closing one-liner in italics — a memorable sign-off that encapsulates the whole soul]_
+
+## Guidelines
+
+- Write in second person ("you") as if speaking directly to the AI who will embody this soul
+- Be creative, specific, and opinionated — avoid generic filler like "be helpful" or "be respectful"
+- Each soul should feel like a distinct person with real character, not a settings menu
+- The tone of the document itself should match the soul it describes (a chaos goblin's file should be energetic, a philosopher's should be reflective)
+- Keep it concise — the whole file should be 300-500 words, dense with personality`;
+
+function streamGenerateSoul(prompt: string): Response {
+  const upstream = fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": process.env.ANTHROPIC_API_KEY!,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-5-20250929",
+      max_tokens: 4096,
+      stream: true,
+      system: GENERATE_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+
+  upstream.then(async (res) => {
+    if (!res.ok || !res.body) {
+      await writer.write(encoder.encode(`data: ${JSON.stringify({ error: "Generation failed" })}\n\n`));
+      await writer.close();
+      return;
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6);
+          if (json === "[DONE]") continue;
+          try {
+            const event = JSON.parse(json) as { type: string; delta?: { type: string; text: string } };
+            if (event.type === "content_block_delta" && event.delta?.text) {
+              await writer.write(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
+            }
+          } catch { /* skip unparseable lines */ }
+        }
+      }
+    } finally {
+      await writer.write(encoder.encode("data: [DONE]\n\n"));
+      await writer.close();
+    }
+  }).catch(async () => {
+    await writer.write(encoder.encode(`data: ${JSON.stringify({ error: "Generation failed" })}\n\n`));
+    await writer.close();
+  });
+
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
+}
+
 export function soulRoutes(db: Client, storage: StorageInterface) {
   const app = new Hono();
+
+  // Generate soul from prompt (requires auth, streaming)
+  app.post("/generate", requireAuth, async (c) => {
+    const body = await c.req.json<{ prompt: string }>();
+    if (!body.prompt || !body.prompt.trim()) {
+      return c.json({ error: "Prompt is required" }, 400);
+    }
+    if (body.prompt.length > 2000) {
+      return c.json({ error: "Prompt must be under 2000 characters" }, 400);
+    }
+    return streamGenerateSoul(body.prompt);
+  });
 
   // List/search souls (public)
   app.get("/", async (c) => {

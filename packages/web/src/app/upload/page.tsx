@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadSoul } from "@/lib/api";
+import { uploadSoul, generateSoulFromPrompt } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { revalidateHome } from "@/app/actions";
 import MarkdownEditor from "@/components/MarkdownEditor";
@@ -15,6 +15,8 @@ export default function UploadPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [generating, setGenerating] = useState(false);
 
   const hasFile = fileName !== null;
 
@@ -32,6 +34,22 @@ export default function UploadPage() {
   const clearFile = () => {
     setFileName(null);
     setContent("");
+  };
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    setError("");
+    setContent("");
+    setGenerating(true);
+    try {
+      await generateSoulFromPrompt(prompt, (text) => {
+        setContent((prev) => prev + text);
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Generation failed");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleDrop = useCallback(
@@ -91,17 +109,49 @@ export default function UploadPage() {
       </h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col" style={{ minHeight: "calc(100vh - 16rem)" }}>
+        {/* Generate from prompt */}
+        <div className="mb-4">
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Describe the soul you want to create..."
+            rows={2}
+            maxLength={2000}
+            disabled={hasFile || generating}
+            className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-accent resize-none disabled:opacity-40 font-sans"
+          />
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={!prompt.trim() || hasFile || generating}
+            className="w-full bg-accent hover:bg-accent-hover text-white px-4 py-2.5 rounded-md text-sm font-medium transition-colors disabled:opacity-50 mt-2 font-sans"
+          >
+            {generating ? "🔮 Summoning..." : "🔮 Summon"}
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-text-muted uppercase tracking-wide">
+            or upload a file
+          </span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
         {/* Drop zone */}
         <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+          onDrop={generating ? undefined : handleDrop}
+          onDragOver={generating ? undefined : handleDragOver}
+          onDragLeave={generating ? undefined : handleDragLeave}
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors mb-4 ${
-            dragging
-              ? "border-accent bg-accent/5"
-              : hasFile
-                ? "border-accent/50 bg-accent/5"
-                : "border-border hover:border-text-muted"
+            generating
+              ? "opacity-40 pointer-events-none border-border"
+              : dragging
+                ? "border-accent bg-accent/5"
+                : hasFile
+                  ? "border-accent/50 bg-accent/5"
+                  : "border-border hover:border-text-muted"
           }`}
         >
           {hasFile ? (
@@ -152,15 +202,15 @@ export default function UploadPage() {
           value={content}
           onChange={setContent}
           placeholder="Paste your SOUL.md content here..."
-          readOnly={hasFile}
-          className={`flex-1 mb-4 ${hasFile ? "opacity-40" : ""}`}
+          readOnly={hasFile || generating}
+          className={`flex-1 mb-4 ${hasFile || generating ? "opacity-40" : ""}`}
         />
 
         {error && <p className="text-error text-sm mb-4">{error}</p>}
 
         <button
           type="submit"
-          disabled={submitting || !content.trim()}
+          disabled={submitting || generating || !content.trim()}
           className="bg-accent hover:bg-accent-hover text-white px-6 py-2.5 rounded-md font-medium transition-colors disabled:opacity-50 font-sans"
         >
           {submitting ? (

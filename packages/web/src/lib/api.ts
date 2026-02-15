@@ -160,6 +160,50 @@ export async function deleteSoulImage(slug: string): Promise<{ ok: boolean }> {
   return apiFetch<{ ok: boolean }>(`/souls/${slug}/image`, { method: "DELETE" });
 }
 
+export async function generateSoulFromPrompt(
+  prompt: string,
+  onChunk: (text: string) => void,
+): Promise<void> {
+  const token = getToken();
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/souls/generate`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error((err as { error: string }).error ?? `API error ${res.status}`);
+  }
+
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue;
+      const data = line.slice(6);
+      if (data === "[DONE]") return;
+      try {
+        const parsed = JSON.parse(data) as { text?: string; error?: string };
+        if (parsed.error) throw new Error(parsed.error);
+        if (parsed.text) onChunk(parsed.text);
+      } catch (e) {
+        if (e instanceof Error && e.message !== data) throw e;
+      }
+    }
+  }
+}
+
 export function getLoginUrl(): string {
   return `${API_URL}/auth/github`;
 }
