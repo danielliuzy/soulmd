@@ -9,7 +9,7 @@ export default function SoulCard({ soul }: { soul: Soul }) {
       className="block bg-bg-card border border-border rounded-lg p-5 hover:border-accent/50 hover:bg-bg-hover transition-all"
     >
       <h3 className="font-semibold text-text truncate">{soul.name}</h3>
-      <p className="text-sm text-text-muted mt-1 line-clamp-2">
+      <p className="text-sm text-text-muted mt-1 line-clamp-2 min-h-[2.5rem]">
         {soul.description ?? "No description"}
       </p>
       <div className="flex items-center gap-3 mt-4">

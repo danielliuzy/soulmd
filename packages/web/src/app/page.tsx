@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SoulCard from "@/components/SoulCard";
 import InstallerWidget from "@/components/InstallerWidget";
+import GhostMascot from "@/components/GhostMascot";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import type { SoulListResponse } from "@/lib/types";
 
@@ -25,19 +26,20 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="text-center py-16">
+      <section className="text-center pt-2 pb-12">
+        <GhostMascot />
         <AnimatedSection>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-2">
             Open<span className="text-accent">SOUL</span>.md
           </h1>
         </AnimatedSection>
         <AnimatedSection delay={0.08}>
-          <p className="text-text text-xl max-w-xl mx-auto mb-8">
-            Upload your <span className="text-accent">SOUL</span>.md
+          <p className="text-text text-xl max-w-xl mx-auto mb-5">
+            Your agent deserves a <span className="text-accent">SOUL</span>
           </p>
         </AnimatedSection>
         <AnimatedSection delay={0.15}>
-          <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="flex items-center justify-center gap-4 mb-5">
             <Link
               href="/browse"
               className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors shadow-md shadow-accent/20"
