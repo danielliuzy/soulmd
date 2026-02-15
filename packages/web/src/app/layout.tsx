@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Source_Serif_4, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -32,7 +33,8 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+            <main className="max-w-6xl mx-auto px-4 py-8 min-h-[calc(100vh-theme(spacing.14)-theme(spacing.32))]">{children}</main>
+            <Footer />
           </AuthProvider>
         </ThemeProvider>
       </body>
