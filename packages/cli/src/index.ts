@@ -152,7 +152,9 @@ program
             soulName = name;
             source = `registry:${meta.label}`;
             s.stop(
-              pc.green(`🔮 Summoned ${pc.yellow(pc.bold(name))} (${meta.label})`),
+              pc.green(
+                `🔮 Summoned ${pc.yellow(pc.bold(name))} (${meta.label})`,
+              ),
             );
           } catch (err) {
             s.stop();
@@ -309,7 +311,8 @@ program
             const desc = soul.description
               ? pc.dim(` — ${soul.description}`)
               : "";
-            const nameTag = soul.name !== soul.label ? ` ${pc.yellow(`(${soul.name})`)}` : "";
+            const nameTag =
+              soul.name !== soul.label ? ` ${pc.yellow(`(${soul.name})`)}` : "";
             console.log(
               `  ${pc.cyan(pc.bold(soul.label))}${nameTag} ${pc.magenta(`by ${soul.author}`)}${rating}${desc}`,
             );
@@ -328,7 +331,8 @@ program
             : "";
           const author = pc.magenta(`by ${soul.author}`);
           const desc = soul.description ? pc.dim(` — ${soul.description}`) : "";
-          const nameTag = soul.name !== soul.label ? ` ${pc.yellow(`(${soul.name})`)}` : "";
+          const nameTag =
+            soul.name !== soul.label ? ` ${pc.yellow(`(${soul.name})`)}` : "";
           return {
             name: `${pc.cyan(pc.bold(soul.label))}${nameTag} ${author}${rating}${desc}`,
             value: soul.label,
@@ -551,9 +555,9 @@ program
   .action(() => {
     const { path, updated } = installSkill();
     if (updated) {
-      console.log(pc.green(`\n✓ Updated OpenSoul skill`));
+      console.log(pc.green(`\n✓ Updated OpenSOUL skill`));
     } else {
-      console.log(pc.green(`\n✓ Installed OpenSoul skill`));
+      console.log(pc.green(`\n✓ Installed OpenSOUL skill`));
     }
     console.log(pc.dim(`  ${path}`));
     console.log(
@@ -573,7 +577,7 @@ program
 
     const removed = uninstallSkill();
     if (removed) {
-      console.log(pc.green("\n✓ Uninstalled OpenSoul skill"));
+      console.log(pc.green("\n✓ Uninstalled OpenSOUL skill"));
     } else {
       fail("Failed to uninstall skill.");
     }

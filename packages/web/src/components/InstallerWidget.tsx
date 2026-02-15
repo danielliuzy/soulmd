@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
 const installers = [
+  { label: "curl", command: "curl -fsSL https://opensoul.md/install.sh | sh" },
   { label: "npm", command: "npm install -g opensoul" },
   { label: "pnpm", command: "pnpm add -g opensoul" },
   { label: "yarn", command: "yarn global add opensoul" },

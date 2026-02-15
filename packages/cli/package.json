@@ -1,6 +1,6 @@
 {
   "name": "opensoul",
-  "version": "0.2.1",
+  "version": "0.1.1",
   "description": "Swappable bot personality files — search, pull, and swap SOUL.md files from the Soul.MD registry",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,8 @@
     "soul": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "SKILL.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -33,7 +34,6 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^8.2.0",
-    "@opensoul/core": "workspace:*",
     "commander": "^13.0.0",
     "picocolors": "^1.1.0",
     "yaml": "^2.7.0"
