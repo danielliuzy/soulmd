@@ -143,7 +143,9 @@ function streamGenerateSoul(c: Context, prompt: string): Response {
 
   upstream.then(async (res) => {
     if (!res.ok || !res.body) {
-      await writer.write(encoder.encode(`data: ${JSON.stringify({ error: "Generation failed" })}\n\n`));
+      const body = await res.text().catch(() => "");
+      const msg = `Generation failed (${res.status}): ${body}`;
+      await writer.write(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
       await writer.close();
       return;
     }
@@ -173,8 +175,9 @@ function streamGenerateSoul(c: Context, prompt: string): Response {
       await writer.write(encoder.encode("data: [DONE]\n\n"));
       await writer.close();
     }
-  }).catch(async () => {
-    await writer.write(encoder.encode(`data: ${JSON.stringify({ error: "Generation failed" })}\n\n`));
+  }).catch(async (err) => {
+    const msg = err instanceof Error ? err.message : "Generation failed";
+    await writer.write(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
     await writer.close();
   });
 
