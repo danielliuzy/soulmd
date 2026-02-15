@@ -10,7 +10,6 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.990.0",
     "@hono/node-server": "^1.19.9",
     "@libsql/client": "^0.17.0",
     "@opensoul/core": "workspace:*",
