@@ -3,7 +3,7 @@
 ### Your agent deserves a SOUL.
 
 <p align="center">
-  <img src="mascot.png" alt="OpenSOUL.md mascot" width="200" />
+  <img src="mascot.png" alt="OpenSOUL.md mascot" width="100%" />
 </p>
 
 OpenSOUL.md is a registry of AI personality files ([SOUL.md](https://soul.md)). Summon souls others have conjured, create your own from a prompt, or possess your OpenClaw Agent with a whole new personality.
