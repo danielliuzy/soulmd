@@ -37,13 +37,14 @@ export default function SoulDetailPage() {
   const [labelError, setLabelError] = useState("");
   const [imageVersion, setImageVersion] = useState(() => Date.now());
   const [showLightbox, setShowLightbox] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   const isOwner = !!(user && soul && soul.user_id === user.id);
 
   useEffect(() => {
     if (!params.id) return;
-    getSoul(params.id).then(setSoul);
-    getSoulContent(params.id).then(setContent);
+    getSoul(params.id).then(setSoul).catch(() => setNotFound(true));
+    getSoulContent(params.id).then(setContent).catch(() => {});
   }, [params.id]);
 
   const handleRate = async (rating: number) => {
@@ -100,6 +101,25 @@ export default function SoulDetailPage() {
       setSaving(false);
     }
   };
+
+  if (notFound) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <p className="text-8xl font-bold mb-2">
+          4<span className="text-accent">0</span>4
+        </p>
+        <p className="text-text-muted text-lg mb-8">
+          This soul has moved on to the other side.
+        </p>
+        <Link
+          href="/"
+          className="bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-md shadow-accent/20"
+        >
+          Go Home
+        </Link>
+      </div>
+    );
+  }
 
   if (!soul) {
     return (
