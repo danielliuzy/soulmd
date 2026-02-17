@@ -7,6 +7,13 @@ metadata:
     "install":
       [
         {
+          "id": "curl",
+          "kind": "shell",
+          "command": "curl -fsSL https://opensoul.md/install.sh | sh",
+          "bins": ["soul"],
+          "label": "Install via curl (recommended)",
+        },
+        {
           "id": "npm",
           "kind": "node",
           "package": "opensoul",
@@ -17,7 +24,7 @@ metadata:
   }
 ---
 
-You can manage the bot's personality by swapping SOUL.md files from the OpenSoul registry.
+You can manage the bot's personality by swapping SOUL.md files from the OpenSOUL.md registry.
 
 ## Available actions
 
