@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "OpenSOUL.md",
     description: "OpenSOUL.md — Your agent deserves a SOUL.",
-    images: ["/og.png"],
+    images: ["https://raw.githubusercontent.com/danielliuzy/opensoul/main/packages/web/public/og.png"],
     creator: "@opensoulmd",
   },
 };
