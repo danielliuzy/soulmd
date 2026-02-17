@@ -19,7 +19,30 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "OpenSOUL.md",
-  description: "Discover, share, and rate AI personality definitions",
+  description: "Your agent deserves a SOUL.",
+  metadataBase: new URL("https://opensoul.md"),
+  openGraph: {
+    title: "OpenSOUL.md",
+    description: "Your agent deserves a SOUL.",
+    url: "https://opensoul.md",
+    siteName: "OpenSOUL.md",
+    type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "OpenSOUL.md — Your agent deserves a soul",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenSOUL.md",
+    description: "Your agent deserves a SOUL.",
+    images: ["/og.png"],
+    creator: "@opensoulmd",
+  },
 };
 
 export default function RootLayout({
