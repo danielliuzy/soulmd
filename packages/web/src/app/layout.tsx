@@ -30,16 +30,16 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og.png",
-        width: 955,
-        height: 500,
-        alt: "OpenSOUL.md — Your agent deserves a soul",
+        width: 1200,
+        height: 630,
+        alt: "OpenSOUL.md — Your agent deserves a SOUL.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "OpenSOUL.md",
-    description: "Your agent deserves a SOUL.",
+    description: "OpenSOUL.md — Your agent deserves a SOUL.",
     images: ["/og.png"],
     creator: "@opensoulmd",
   },
