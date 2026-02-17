@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
 const installers = [
-  { label: "clawhub", command: "npx clawhub install opensoulmd" },
+  { label: "clawhub", command: "npx clawhub@latest install opensoulmd" },
   {
     label: "curl",
     command: "curl -fsSL https://opensoul.md/install.sh | sh",
