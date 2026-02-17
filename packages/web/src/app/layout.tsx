@@ -30,8 +30,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og.png",
-        width: 1200,
-        height: 630,
+        width: 955,
+        height: 500,
         alt: "OpenSOUL.md — Your agent deserves a soul",
       },
     ],
@@ -51,12 +51,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${inter.variable}`}
+      suppressHydrationWarning
+    >
       <body className={sourceSerif.className}>
         <ThemeProvider>
           <AuthProvider>
             <Navbar />
-            <main className="max-w-6xl mx-auto px-4 py-8 min-h-[calc(100vh-theme(spacing.14)-theme(spacing.32))]">{children}</main>
+            <main className="max-w-6xl mx-auto px-4 py-8 min-h-[calc(100vh-theme(spacing.14)-theme(spacing.32))]">
+              {children}
+            </main>
             <Footer />
           </AuthProvider>
         </ThemeProvider>
