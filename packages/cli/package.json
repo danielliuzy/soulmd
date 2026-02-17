@@ -1,6 +1,6 @@
 {
   "name": "opensoul",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Possess your AI agent — search, summon, and possess SOUL.md personality files from the OpenSOUL.md registry",
   "type": "module",
   "license": "MIT",
@@ -20,7 +20,8 @@
     "possess"
   ],
   "bin": {
-    "soul": "./dist/index.js"
+    "soul": "./dist/index.js",
+    "opensoul": "./dist/index.js"
   },
   "files": [
     "dist"
